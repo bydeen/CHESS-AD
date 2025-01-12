@@ -7,3 +7,5 @@ src/__pycache__/
 *.pyc
 __pycache__/
 sqlite*
+the-effects-of-noise-in-text-to-SQL/
+code.txt
