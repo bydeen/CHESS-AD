@@ -23,6 +23,10 @@ class SystemState(BaseModel):
     tentative_schema: Dict[str, List[str]]
     execution_history: List[Any]
     
+    lexical_ambiguity: Dict[str, List[str]] = {}
+    syntactic_ambiguity: Dict[str, List[str]] = {}
+    underspecification: Dict[str, List[str]] = {}
+    
     keywords: List[str] = []
     
     similar_columns: Dict[str, List[str]] = {}

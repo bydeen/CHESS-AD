@@ -1,10 +1,10 @@
 [
   {
-    "question_id": 133,
+    "question_id": 165,
     "db_id": "financial",
-    "question": "In 1996, which districts have the highest unemployment rate? List their branch location and district name.",
-    "evidence": "A2 refers to district names; A13 refers to unemploymant rate in 1996",
-    "SQL": "SELECT district_id, A2 FROM district ORDER BY A13 DESC LIMIT 1",
+    "question": "Please list all the transactions made by accounts from district 5.",
+    "evidence": "",
+    "SQL": "SELECT T3.trans_id FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T1.district_id = 5",
     "difficulty": "simple"
   }
 ]
