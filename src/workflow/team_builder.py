@@ -4,6 +4,7 @@ from typing import Dict, Any
 from langgraph.graph import END, StateGraph
 from workflow.system_state import SystemState
 
+from workflow.agents.ambiguity_detector.ambiguity_detector import AmbiguityDetector
 from workflow.agents.information_retriever.information_retriever import InformationRetriever
 from workflow.agents.schema_selector.schema_selector import SchemaSelector
 from workflow.agents.candidate_generator.candidate_generator import CandidateGenerator
@@ -11,7 +12,11 @@ from workflow.agents.unit_tester.unit_tester import UnitTester
 
 from workflow.agents.evaluation import ExecutionAccuracy
 
+from IPython.display import Image, display
+from langchain_core.runnables.graph import CurveStyle, MermaidDrawMethod, NodeStyles
+
 AGENT_CLASSES = {
+    "ambiguity_detector": AmbiguityDetector,
     "information_retriever": InformationRetriever,
     "schema_selector": SchemaSelector,
     "candidate_generator": CandidateGenerator,
@@ -75,4 +80,11 @@ def build_team(config: Dict[str, any]) -> StateGraph:
     builder.build()
     team = builder.team.compile()
     logging.info("Team built and compiled successfully")
+    
+    # Visualize the state graph
+    # png_data = team.get_graph().draw_mermaid_png(draw_method=MermaidDrawMethod.API)
+    # with open("state_graph.png", "wb") as f:
+    #     f.write(png_data)
+    # print("StateGraph saved as state_graph.png")
+        
     return team

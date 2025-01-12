@@ -1,0 +1,19 @@
+./run/run_main_ir_ss_cg.sh
+    ./src/main.py
+        1. parse_arguments
+        2. load_dataset
+        3. RunManager ./src/runner/run_manager.py
+            1. initialize_tasks
+            2. run_tasks
+                1. worker
+                    1. build_team # team 내에 IR, SS, CG, UT agent가 존재
+                    2. team.stream # StateGraph의 method, 생성된 state graph execute
+                        0. AmbiguityDetector
+                        1. InformationRetriever ./src/workflow/agents/information_retriever
+                            ./tool_kit
+                            1. ExtractKeywords = use LLM to extract keywords from question and hint
+                            2. RetrieveEntity
+                            3. RetrieveContext
+                2. task_done
+            3. generate_sql_files
+            

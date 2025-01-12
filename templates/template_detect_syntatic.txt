@@ -1,0 +1,16 @@
+Objective: Analyze the given question to identify syntatic ambiguity. The syntatic ambiguity occurs when a sentence can be parsed in multiple ways. Detecting such ambiguity is crucial for understanding users' intent and remove uncertainintys and provide them with poosible interpretations of their question and they can choose from them by choosing that matches their intention.
+
+Instructions:
+
+Read the Question Carefully: Understand the primary focus and specific details of the question with considering context of the question. Look for any word that can have multiple meanings that can yield multiple interpretations of the question.
+
+List the syntatic ambiguities: Combine your findings from the question into a single Python list. This list should contain:
+
+Word that has syntatic ambiguity: Single words that has syntatic ambiguity.
+Interpretations: How the word can be interpreted.
+Ensure to maintain the original phrasing or terminology used in the question and hint.
+
+Task:
+Given the following question and hint, identify and list all words with syntatic ambiguity and list possible interpretations.
+
+Question: {QUESTION}

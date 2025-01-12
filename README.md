@@ -3,6 +3,7 @@
 This repository contains the code and data for the paper "CHESS: Contextual Harnessing for Efficient SQL Synthesis."
 
 Translating natural language questions into SQL queries, known as text-to-SQL, is a long-standing research problem. Effective text-to-SQL synthesis can become very challenging due to:
+
 - (i) The extensive size of database catalogs (descriptions of tables and their columns) and database values,
 - (ii) Reasoning over large database schemas,
 - (iii) Ensuring the functional validity of the generated queries,
@@ -30,57 +31,61 @@ Our framework offers configurable features that adapt to various deployment cons
 ## Setting up the Environment
 
 1. **Clone the repository**:
-    ```bash
-    git clone https://github.com/yourusername/CHESS.git
-    cd CHESS
-    ```
+
+   ```bash
+   git clone https://github.com/yourusername/CHESS.git
+   cd CHESS
+   ```
 
 2. **Create a `.env` file** in the root directory and add the following configuration:
-    ```bash
-    DATA_MODE="dev"
-    DATA_PATH="./data/dev/dev.json"
-    DB_ROOT_DIRECTORY="./data/dev/dev_databases"
-    DATA_TABLES_PATH="./data/dev/dev_tables.json"
-    INDEX_SERVER_HOST='localhost'
-    INDEX_SERVER_PORT=12345
 
-    OPENAI_API_KEY=
-    GCP_PROJECT=''
-    GCP_REGION='us-central1'
-    GCP_CREDENTIALS=''
-    GOOGLE_CLOUD_PROJECT=''
-    ```
+   ```bash
+   DATA_MODE="dev"
+   DATA_PATH="./data/dev/dev.json"
+   DB_ROOT_DIRECTORY="./data/dev/dev_databases"
+   DATA_TABLES_PATH="./data/dev/dev_tables.json"
+   INDEX_SERVER_HOST='localhost'
+   INDEX_SERVER_PORT=12345
+
+   OPENAI_API_KEY=
+   GCP_PROJECT=''
+   GCP_REGION='us-central1'
+   GCP_CREDENTIALS=''
+   GOOGLE_CLOUD_PROJECT=''
+   ```
 
 3. **Install required packages**:
-    ```bash
-    pip install -r requirements.txt
-    ```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## Preprocessing
 
 To retrieve database catalogs and find the most similar database values to a question, preprocess the databases:
 
 1. **Run the preprocessing script**:
-    ```bash
-    sh run/run_preprocess.sh
-    ```
 
-    This will create the minhash, LSH, and vector databases for each of the databases in the specified directory.
+   ```bash
+   bash run/run_preprocess.sh
+   ```
+
+   This will create the minhash, LSH, and vector databases for each of the databases in the specified directory.
 
 ## Running the Code
 
 After preprocessing the databases, generate SQL queries for the BIRD dataset by choosing a configuration:
 
 1. **Run the main script**:
-    ```bash
-    sh run/run_main_ir_cg_ut.sh
-    ```
 
-    or
+   ```bash
+   bash run/run_main_ir_cg_ut.sh
+   ```
 
-    ```bash
-    sh run/run_main_ir_ss_ch.sh
-    ```
+   or
+
+   ```bash
+   bash run/run_main_ir_ss_ch.sh
+   ```
 
 ## Sub-sampled Development Set (SDS)
 
