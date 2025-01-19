@@ -1,9 +1,13 @@
+import os
 from typing import Dict
+from pathlib import Path
 
 from runner.logger import Logger
 from runner.database_manager import DatabaseManager
 from workflow.system_state import SystemState
 from workflow.agents.tool import Tool
+
+DATA_MODE = os.getenv("DATA_MODE")
 
 class ExecutionAccuracy(Tool):
     """
@@ -29,12 +33,37 @@ class ExecutionAccuracy(Tool):
         for key in evaluation_keys:
             try:
                 if key in state.SQL_meta_infos:
-                    # checking only one of the SQLs
-                    predicted_sql = state.SQL_meta_infos[key][0].SQL
-                    evaluation_result = self._log_sql_result(state, predicted_sql)
+                    if DATA_MODE == "ambrosia":
+                        # checking all the SQLs for all ground truth SQLs
+                        for idx, sql_meta_info in enumerate(state.SQL_meta_infos[key]):
+                            predicted_sql = sql_meta_info.SQL
+                            for gold_idx, ground_truth_sql in enumerate(state.task.sql_queries):
+                                state.task.SQL = ground_truth_sql
+                                evaluation_result = self._log_sql_result(state, predicted_sql)
+                                
+                                result_key = f"{key}_{idx}_{gold_idx}"
+                                evaluation_result.update({
+                                    "Question": state.task.question,
+                                    "Interpretation": state.unambiguous_questions[idx],
+                                    "Evidence": state.task.evidence,
+                                    "GOLD_SQL": ground_truth_sql,
+                                    "PREDICTED_SQL": predicted_sql,
+                                })
+                                self.evaluation_results[result_key] = evaluation_result
+                    else:
+                        # checking only one of the SQLs
+                        predicted_sql = state.SQL_meta_infos[key][0].SQL
+                        evaluation_result = self._log_sql_result(state, predicted_sql)
                     
                 elif key in state.errors:
                     evaluation_result = self._log_error(state.errors[key])
+                    evaluation_result.update({
+                        "Question": state.task.question,
+                        "Evidence": state.task.evidence,
+                        "GOLD_SQL": state.task.SQL,
+                        "PREDICTED_SQL": predicted_sql,
+                    })
+                    self.evaluation_results[key] = evaluation_result
                     
             except Exception as e:
                 predicted_sql = "--error--"
@@ -46,17 +75,9 @@ class ExecutionAccuracy(Tool):
                     "exec_res": "error",
                     "exec_err": str(e),
                 }
-
-            evaluation_result.update({
-                "Question": state.task.question,
-                "Evidence": state.task.evidence,
-                "GOLD_SQL": state.task.SQL,
-                "PREDICTED_SQL": predicted_sql
-            })
-            self.evaluation_results[key] = evaluation_result
-            
+        
         # Choosing the last SQL without syntax error as the final SQL
-        # TODO: Implement a better way to choose the final SQL    
+        # TODO: Implement a better way to choose the final SQL
         final_result = None
         for key, evaluation_result in self.evaluation_results.items():
             if evaluation_result["exec_res"] not in ["incorrect answer", "--"]:

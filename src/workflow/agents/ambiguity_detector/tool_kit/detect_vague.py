@@ -6,9 +6,9 @@ from llm.parsers import get_parser
 from workflow.system_state import SystemState
 from workflow.agents.tool import Tool
 
-class DetectUnderspec(Tool):
+class DetectVague(Tool):
     """
-    Tool for detecting underspecification in the question.
+    Tool for detecting vagueness in the question.
     """
     
     def __init__(self, mode: str, template_name: str = None, engine_config: str = None, parser_name: str = None):
@@ -22,7 +22,6 @@ class DetectUnderspec(Tool):
         request_kwargs = {
             "DATABASE_SCHEMA": state.get_schema_string(schema_type="tentative"),
             "QUESTION": state.task.question,
-            "HINT": state.task.evidence,
         }
         
         response = async_llm_chain_call(
@@ -33,8 +32,7 @@ class DetectUnderspec(Tool):
             step=self.tool_name,
         )[0]
         
-        state.underspecification = response[0]
-        print(f"Underspecification: {state.underspecification}")
-        
+        state.unambiguous_questions.extend(response[0].get("interpretations", []))
+
     def _get_updates(self, state: SystemState) -> Dict:
-        return {"underspecification": state.underspecification}
+        return {"unambiguous_questions": state.unambiguous_questions}

@@ -1,9 +1,10 @@
 from workflow.agents.agent import Agent
 from workflow.system_state import SystemState
 
-from workflow.agents.ambiguity_detector.tool_kit.detect_lexical import DetectLexical
-from workflow.agents.ambiguity_detector.tool_kit.detect_syntatic import DetectSyntatic
-from workflow.agents.ambiguity_detector.tool_kit.detect_underspec import DetectUnderspec
+from workflow.agents.ambiguity_detector.tool_kit.detect_scope import DetectScope
+from workflow.agents.ambiguity_detector.tool_kit.detect_attach import DetectAttach
+from workflow.agents.ambiguity_detector.tool_kit.detect_vague import DetectVague
+from workflow.agents.ambiguity_detector.tool_kit.remove_duplicates import RemoveDuplicates
 
 class AmbiguityDetector(Agent):
     """
@@ -14,13 +15,14 @@ class AmbiguityDetector(Agent):
         """Initialize the tools needed for ambiguity detection"""
         super().__init__(
             name="Ambiguity Detector",
-            task=("detect ambiguity in the question (lexical, syntatic, underspecification) and ",
+            task=("detect ambiguity in the question (scope, attachment, vagueness) and ",
                          "generate a list of possible interpretations for the entire question."),
             config=config
         )
         
         self.tools = {
-            "detect_lexical": DetectLexical(**config["tools"]["detect_lexical"]),
-            "detect_syntatic": DetectSyntatic(**config["tools"]["detect_syntatic"]),
-            "detect_underspec": DetectUnderspec(**config["tools"]["detect_underspec"])
+            "detect_scope": DetectScope(**config["tools"]["detect_scope"]),
+            "detect_attach": DetectAttach(**config["tools"]["detect_attach"]),
+            "detect_vague": DetectVague(**config["tools"]["detect_vague"]),
+            "remove_duplicates": RemoveDuplicates(**config["tools"]["remove_duplicates"])
         }

@@ -1,58 +1,21 @@
-# CHESS: Contextual Harnessing for Efficient SQL Synthesis
+# CHESS-AD: Resolving Ambiguous Questions with Example Table Generation in Text-to-SQL
 
-This repository contains the code and data for the paper "CHESS: Contextual Harnessing for Efficient SQL Synthesis."
+This repository is a fork of the code and data for the paper **"CHESS: Contextual Harnessing for Efficient SQL Synthesis."**
 
-Translating natural language questions into SQL queries, known as text-to-SQL, is a long-standing research problem. Effective text-to-SQL synthesis can become very challenging due to:
+## AMBROSIA Dataset
 
-- (i) The extensive size of database catalogs (descriptions of tables and their columns) and database values,
-- (ii) Reasoning over large database schemas,
-- (iii) Ensuring the functional validity of the generated queries,
-- (iv) Navigating the ambiguities of natural language questions.
-
-We introduce **CHESS**, a Large Language Model (LLM) based multi-agent framework for efficient and scalable SQL synthesis, comprising four specialized agents, each targeting one of the aforementioned challenges:
-
-1. **Information Retriever (IR)**: Extracts relevant data.
-2. **Schema Selector (SS)**: Prunes large schemas.
-3. **Candidate Generator (CG)**: Generates high-quality candidates and refines queries iteratively.
-4. **Unit Tester (UT)**: Validates queries through LLM-based natural language unit tests.
-
-Our framework offers configurable features that adapt to various deployment constraints:
-
-### Key Features
-
-- **Industrial-Scale Database Support**: Using the Schema Selector agent, CHESS efficiently narrows down very large database schemas into manageable sub-schemas, boosting system accuracy by approximately 2% and reducing LLM token usage by 5x.
-- **Privacy-Preserving Performance**: Among methods using open-source models, CHESS achieves state-of-the-art performance, providing a high-performing, privacy-preserving system suitable for industrial deployment.
-- **Scalability**: In settings with high computational budgets, CHESS reaches 71.10% accuracy on the BIRD test set, within 2% of the leading proprietary method, while reducing LLM calls by approximately 83%.
-
-## CHESS
-
-![CHESS Framework](images/chess.jpg)
+CHESS-AD supports the **AMBROSIA** dataset. The dataset is available at https://ambrosia-benchmark.github.io/.
 
 ## Setting up the Environment
 
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/yourusername/CHESS.git
-   cd CHESS
+   git clone https://github.com/bydeen/CHESS-AD.git
+   cd CHESS-AD
    ```
 
-2. **Create a `.env` file** in the root directory and add the following configuration:
-
-   ```bash
-   DATA_MODE="dev"
-   DATA_PATH="./data/dev/dev.json"
-   DB_ROOT_DIRECTORY="./data/dev/dev_databases"
-   DATA_TABLES_PATH="./data/dev/dev_tables.json"
-   INDEX_SERVER_HOST='localhost'
-   INDEX_SERVER_PORT=12345
-
-   OPENAI_API_KEY=
-   GCP_PROJECT=''
-   GCP_REGION='us-central1'
-   GCP_CREDENTIALS=''
-   GOOGLE_CLOUD_PROJECT=''
-   ```
+2. **Create a `.env` file** in the root directory using `env.example` as a template.
 
 3. **Install required packages**:
    ```bash
@@ -61,49 +24,24 @@ Our framework offers configurable features that adapt to various deployment cons
 
 ## Preprocessing
 
-To retrieve database catalogs and find the most similar database values to a question, preprocess the databases:
+To retrieve database catalogs, preprocess the databases with a targeted ambiguity type:
 
 1. **Run the preprocessing script**:
 
    ```bash
-   bash run/run_preprocess.sh
+   bash run/run_preprocess_ambrosia.sh {scope, attachment, vague}
    ```
 
-   This will create the minhash, LSH, and vector databases for each of the databases in the specified directory.
+   Replace `{scope, attachment, vague}` with one of the ambiguity types (e.g., `scope`). This script will create the minhash and LSH for each of the databases in the specified directory.
 
 ## Running the Code
 
-After preprocessing the databases, generate SQL queries for the BIRD dataset by choosing a configuration:
+After preprocessing the databases, generate SQL queries for the AMBROSIA dataset with a targeted ambiguity type:
 
 1. **Run the main script**:
 
    ```bash
-   bash run/run_main_ir_cg_ut.sh
+   bash run/run_main_ad_ir_cg.sh {scope, attachment, vague}
    ```
 
-   or
-
-   ```bash
-   bash run/run_main_ir_ss_ch.sh
-   ```
-
-## Sub-sampled Development Set (SDS)
-
-The sub-sampled development set (SDS) is a subset of the BIRD dataset with 10% of samples from each database. It is used for ablation studies and is available in `sub_sampled_bird_dev_set.json`.
-
-## Supporting Other LLMs
-
-To use your own LLM, modify the `get_llm_chain(engine, temperature, base_uri=None)` function and add your LLM in `run/langchain_utils.py`.
-
-## Citation
-
-If you find this repository helpful, please cite the following paper:
-
-```bibtex
-@article{talaei2024chess,
-  title={CHESS: Contextual Harnessing for Efficient SQL Synthesis},
-  author={Talaei, Shayan and Pourreza, Mohammadreza and Chang, Yu-Chen and Mirhoseini, Azalia and Saberi, Amin},
-  journal={arXiv preprint arXiv:2405.16755},
-  year={2024}
-}
-```
+   Replace `{scope, attachment, vague}` with one of the ambiguity types. Ensure the same ambiguity type is used as in preprocessing.

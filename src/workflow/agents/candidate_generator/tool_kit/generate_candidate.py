@@ -37,45 +37,47 @@ class GenerateCandidate(Tool):
         state.SQL_meta_infos[self.tool_name] = []
         for generator_config in self.generator_configs:
             self.generators_queries[generator_config.template_name] = []
-        for generator_config in self.generator_configs:
-            if self.next_generator_to_use != "ALL" and generator_config.template_name != self.next_generator_to_use:
-                continue
-            request_list = []
-            for i in range(generator_config.sampling_count):
-                try:
-                    request_kwargs = {
-                        "DATABASE_SCHEMA": state.get_schema_string(schema_type="complete"),
-                        "QUESTION": state.task.question,
-                        "HINT": state.task.evidence,
-                    }
-                    request_list.append(request_kwargs)
-                except Exception as e:
-                    print(f"Error in creating request_kwargs for generator {generator_config.template_name}: {e}")
-                    continue
             
-            try:
-                response = async_llm_chain_call(
-                    prompt=get_prompt(template_name=generator_config.template_name),
-                    engine=get_llm_chain(**generator_config.engine_config),
-                    parser=get_parser(generator_config.parser_name),
-                    request_list=request_list,
-                    step=f"{self.tool_name}_{generator_config.engine_config['engine_name']}",
-                )
-                response = [res for sublist in response for res in sublist]
-            except Exception as e:
-                print(f"Error in generating SQL queries for generator {generator_config.template_name}: {e}")
-                continue
-            for res in response:
-                if not res:
+        for question in state.unambiguous_questions:
+            for generator_config in self.generator_configs:
+                if self.next_generator_to_use != "ALL" and generator_config.template_name != self.next_generator_to_use:
                     continue
+                request_list = []
+                for i in range(generator_config.sampling_count):
+                    try:
+                        request_kwargs = {
+                            "DATABASE_SCHEMA": state.get_schema_string(schema_type="complete"),
+                            "QUESTION": question,
+                            "HINT": state.task.evidence,
+                        }
+                        request_list.append(request_kwargs)
+                    except Exception as e:
+                        print(f"Error in creating request_kwargs for generator {generator_config.template_name}: {e}")
+                        continue
+                
                 try:
-                    sql_meta_info = SQLMetaInfo(**res)
-                    # state.SQL_meta_infos[self.tool_name].append(sql_meta_info)
-                    self.generators_queries[generator_config.template_name].append(sql_meta_info)
+                    response = async_llm_chain_call(
+                        prompt=get_prompt(template_name=generator_config.template_name),
+                        engine=get_llm_chain(**generator_config.engine_config),
+                        parser=get_parser(generator_config.parser_name),
+                        request_list=request_list,
+                        step=f"{self.tool_name}_{generator_config.engine_config['engine_name']}",
+                    )
+                    response = [res for sublist in response for res in sublist]
                 except Exception as e:
-                    print(f"Error in creating SQLMetaInfo for generator {generator_config.template_name}: {e}")
+                    print(f"Error in generating SQL queries for generator {generator_config.template_name}: {e}")
                     continue
-            request_list = []
+                for res in response:
+                    if not res:
+                        continue
+                    try:
+                        sql_meta_info = SQLMetaInfo(**res)
+                        # state.SQL_meta_infos[self.tool_name].append(sql_meta_info)
+                        self.generators_queries[generator_config.template_name].append(sql_meta_info)
+                    except Exception as e:
+                        print(f"Error in creating SQLMetaInfo for generator {generator_config.template_name}: {e}")
+                        continue
+                request_list = []
         for generator_config in self.generator_configs:
             if len(self.generators_queries[generator_config.template_name]) > 0:
                 state.SQL_meta_infos[self.tool_name] += self.generators_queries[generator_config.template_name]

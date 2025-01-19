@@ -1,0 +1,69 @@
+setting_name: CHESS_AD_IR_CG
+
+team_agents:
+  ambiguity_detector:
+    engine: "gpt-4o-mini"
+    tools:
+      detect_scope:
+        mode: "ask_model"
+        template_name: "detect_scope"
+        engine_config:
+          engine_name: "gpt-4o"
+          temperature: 0.0
+        parser_name: "detect_scope"
+
+      detect_attach:
+        mode: "ask_model"
+        template_name: "detect_attach"
+        engine_config:
+          engine_name: "gpt-4o"
+          temperature: 0.0
+        parser_name: "detect_attach"
+
+      detect_vague:
+        mode: "ask_model"
+        template_name: "detect_vague"
+        engine_config:
+          engine_name: "gpt-4o"
+          temperature: 0.0
+        parser_name: "detect_vague"
+
+      remove_duplicates:
+        mode: "ask_model"
+        template_name: "remove_duplicates"
+        engine_config:
+          engine_name: "gpt-4o"
+          temperature: 0.0
+        parser_name: "remove_duplicates"
+
+  information_retriever:
+    engine: "gpt-4o-mini"
+    tools:
+      extract_keywords:
+        template_name: "extract_keywords"
+        engine_config:
+          engine_name: "gpt-4o-mini"
+          temperature: 0.2
+        parser_name: "python_list_output_parser"
+      retrieve_entity: {}
+      retrieve_context:
+        top_k: 5
+
+  candidate_generator:
+    engine: "gpt-4o-mini"
+    tools:
+      generate_candidate:
+        generator_configs:
+          - template_name: "generate_candidate_one"
+            engine_config:
+              engine_name: "gpt-4o-mini"
+              temperature: 0.01
+            parser_name: "generate_candidate_gemini_markdown_cot"
+            sampling_count: 1
+
+      revise:
+        template_name: "revise_one"
+        engine_config:
+          engine_name: "gpt-4o-mini"
+          temperature: 0.0
+        parser_name: "revise_new"

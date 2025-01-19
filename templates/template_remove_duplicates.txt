@@ -1,0 +1,109 @@
+You are an experienced database expert specializing in query interpretation and redundancy resolution.
+
+### Context
+Database Schema Overview:
+{DATABASE_SCHEMA}
+
+Ambiguous questions have been analyzed for three types of ambiguity:
+1. Scope Ambiguity: Uncertainty about which elements a quantifier (e.g., "each", "every", "all") refers to.
+2. Attachment Ambiguity: Uncertainty about how a modifier or phrase is attached to the rest of the sentence.
+3. Vagueness: Uncertainty about the specific set of entities being referred to due to lack of context.
+
+For each type of ambiguity, possible interpretations were generated independently. Your task is to review the combined interpretations and identify duplicates or redundant interpretations that express the same meaning.
+
+---
+
+### Definitions
+What constitutes duplicate interpretations?
+  - Duplicate interpretations convey the same meaning or intent, even if phrased differently.
+  - Interpretations that would yield identical results when executed against the database schema should be treated as duplicates.
+  - Minor variations in wording that do not change the logical meaning are considered duplicates.
+
+---
+
+### Examples
+
+#### Scope Ambiguity Example
+Ambiguous Question:
+Give me the processing techniques each coffee plantation uses.
+
+Unambiguous Interpretations:
+1. What processing techniques are the same on all coffee plantations?
+2. For every coffee plantation, list the processing techniques used.
+
+#### Attachment Ambiguity Example
+Ambiguous Question:
+Show debt obligations and mortgage obligations with a price of 1000.
+
+Unambiguous Interpretations:
+1. What debt obligations have a price of 1000 and what mortgage obligations have the same price?
+2. Provide a list of all debt obligations and also provide a list of all mortgage obligations with a price of 1000.
+
+#### Vagueness Example
+Ambiguous Question:
+What is the maximum baggage allowance?
+
+Unambiguous Interpretations:
+1. What's the maximum bag weight allowed?
+2. What are the maximum number of bag pieces allowed?
+3. What's the maximum bag weight and maximum number of individual bag pieces allowed?
+
+#### Removing Redundancy Across Types
+Unambiguous Interpretations:
+1. List Boeing models with 180 seats and Airbus models with 180 seats. (from scope ambiguity)
+2. List Boeing models that have 180 seats and Airbus models that also have 180 seats. (from attachment ambiguity)
+=> These two interpretations have identical meanings and should be treated as one.
+
+---
+
+### Task
+1. Remove Duplicates:
+  - Review the following interpretations and remove duplicates based on the above criteria:
+    Unambiguous Interpretations: {INTERPRETATIONS}
+
+2. Generate Example Tables:
+  - Using the database schema, generate an example table for each unique interpretation. The tables must:
+  - Include correct column names and realistic values based on the database schema.
+  - Clearly distinguish between the interpretations by showing how the query results differ for each case.
+  - Use meaningful and contextually relevant data that aligns with the interpretation's intent.
+
+---
+
+### Response Format
+Return your output as a JSON object strictly adhering to the structure below:
+
+```json
+{{
+  "interpretations": [
+    "Unique Unambiguous Interpretation 1",
+    "Unique Unambiguous Interpretation 2",
+    ...
+  ],
+  "example_tables": [
+    {{
+      "headers": ["Column1", "Column2", "Column3", ...],
+      "data": [
+        ["Value1", "Value2", "Value3", ...],
+        ...
+      ]
+    }},
+    {{
+      "headers": ["ColumnA", "ColumnB", "ColumnC", ...],
+      "data": [
+        ["ValueX", "ValueY", "ValueZ", ...],
+        ["ValueP", "ValueQ", "ValueR", ...],
+        ...
+      ]
+    }}
+  ]
+}}
+
+Guidelines for Removing Duplicates:
+  - Exact Match: If two interpretations are phrased differently but yield identical query results, treat them as duplicates.
+  - Semantic Difference: Retain interpretations that differ in logic, focus, or intent.
+  - Ambiguity Type Labels: Ignore the source of the interpretation (scope, attachment, or vagueness). Focus only on the meaning.
+
+Guidelines for Example Tables:
+  - Ensure the example tables contain correct column names and realistic example data values based on the provided database schema. The tables should clearly distinguish between the interpretations by demonstrating how the query results vary for each case.
+
+Take a deep breath, analyze carefully, and proceed step by step to ensure high-quality output.

@@ -1,8 +1,3 @@
-# to fix error with Chroma and sqlite3 version conflict
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-
 import logging
 from typing import Dict
 from langchain_chroma import Chroma

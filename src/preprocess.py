@@ -1,3 +1,8 @@
+# to fix error with Chroma and sqlite3 version conflict
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 import os
 import argparse
 import multiprocessing
@@ -12,8 +17,7 @@ NUM_WORKERS = 1
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-
-def worker_initializer(db_id: str, args: argparse.Namespace):
+def worker_initializer(data_mode: str, db_id: str, args: argparse.Namespace):
     """
     Initializes the worker to create LSH and context vectors for a given database ID.
     
@@ -29,14 +33,17 @@ def worker_initializer(db_id: str, args: argparse.Namespace):
                 threshold=args.threshold,
                 verbose=args.verbose)
     logging.info(f"LSH for {db_id} created.")
-    logging.info(f"Creating context vectors for {db_id}")
-    make_db_context_vec_db(db_directory_path,
-                           use_value_description=args.use_value_description)
-    logging.info(f"Context vectors for {db_id} created.")
+    
+    if data_mode != "ambrosia":
+        logging.info(f"Creating context vectors for {db_id}")
+        make_db_context_vec_db(db_directory_path,
+                            use_value_description=args.use_value_description)
+        logging.info(f"Context vectors for {db_id} created.")
 
 if __name__ == '__main__':
     # Setup argument parser
     args_parser = argparse.ArgumentParser()
+    args_parser.add_argument('--data_mode', type=str, required=True, help="Mode of the data to be processed.")
     args_parser.add_argument('--db_root_directory', type=str, required=True, help="Root directory of the databases")
     args_parser.add_argument('--signature_size', type=int, default=20, help="Size of the MinHash signature")
     args_parser.add_argument('--n_gram', type=int, default=3, help="N-gram size for the MinHash")
@@ -44,7 +51,6 @@ if __name__ == '__main__':
     args_parser.add_argument('--db_id', type=str, default='all', help="Database ID or 'all' to process all databases")
     args_parser.add_argument('--verbose', type=bool, default=True, help="Enable verbose logging")
     args_parser.add_argument('--use_value_description', type=bool, default=True, help="Include value descriptions")
-
     args = args_parser.parse_args()
 
     if args.db_id == 'all':
@@ -56,6 +62,6 @@ if __name__ == '__main__':
             pool.close()
             pool.join()
     else:
-        worker_initializer(args.db_id, args)
+        worker_initializer(args.data_mode, args.db_id, args)
 
     logging.info("Preprocessing is complete.")

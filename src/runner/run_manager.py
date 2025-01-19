@@ -81,6 +81,11 @@ class RunManager:
         for i, data in enumerate(dataset):
             if "question_id" not in data:
                 data = {"question_id": i, **data}
+            if "db_id" not in data:
+                data = {"db_id": self.args.db_id, **data}
+            sql_queries = [value for key, value in data.items() if key.startswith("sql_query") and isinstance(value, str)]
+            if sql_queries:
+                data["sql_queries"] = sql_queries
             self.update_final_predictions(data["question_id"])
             task = Task(**data)
             self.tasks.append(task)
@@ -121,8 +126,9 @@ class RunManager:
         thread_id = f"{self.args.run_start_time}_{task.db_id}_{task.question_id}"
         thread_config = {"configurable": {"thread_id": thread_id}}
         state_values =  SystemState(task=task, 
-                                    tentative_schema=DatabaseManager().get_db_schema(), 
-                                    execution_history=[])
+                                    tentative_schema=DatabaseManager().get_db_schema(),
+                                    execution_history=[],
+                                    user_selection=self.args.user_selection)
         thread_config["recursion_limit"] = 50
         for state_dict in team.stream(state_values, thread_config, stream_mode="values"):
             logger.log("________________________________________________________________________________________")
@@ -211,6 +217,8 @@ class RunManager:
             if "final_SQL" in step:
                 self.statistics_manager.update_stats(db_id, question_id, "final_SQL", step["final_SQL"])
                 self.update_final_predictions(question_id, step["final_SQL"]["PREDICTED_SQL"], db_id)
+                if self.args.data_mode == "ambrosia":
+                    self.statistics_manager.update_recall(db_id, question_id, "final_SQL", step)
         self.statistics_manager.dump_statistics_to_file()
         self.processed_tasks += 1
         self.plot_progress()

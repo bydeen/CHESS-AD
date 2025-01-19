@@ -1,3 +1,8 @@
+# to fix error with Chroma and sqlite3 version conflict
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 import argparse
 import yaml
 import json
@@ -17,9 +22,11 @@ def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the pipeline with the specified configuration.")
     parser.add_argument('--data_mode', type=str, required=True, help="Mode of the data to be processed.")
     parser.add_argument('--data_path', type=str, required=True, help="Path to the data file.")
+    parser.add_argument('--db_id', type=str, required=False, help="Database ID for AMBROSIA.")
     parser.add_argument('--config', type=str, required=True, help="Path to the configuration file.")
     parser.add_argument('--num_workers', type=int, default=1, help="Number of workers to use.")
     parser.add_argument('--log_level', type=str, default='warning', help="Logging level.")
+    parser.add_argument('--user_selection', type=bool, default=False, help="User selection of the interpretation matching their intention.")
     parser.add_argument('--pick_final_sql', type=bool, default=False, help="Pick the final SQL from the generated SQLs.")
     args = parser.parse_args()
 

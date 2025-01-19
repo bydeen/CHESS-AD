@@ -9,13 +9,14 @@ class Statistics:
     incorrects: Dict[str, List[Tuple[str, str]]] = field(default_factory=dict)
     errors: Dict[str, List[Union[Tuple[str, str], Tuple[str, str, str]]]] = field(default_factory=dict)
     total: Dict[str, int] = field(default_factory=dict)
+    recall: Dict[str, List[Tuple[str, str, float]]] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Dict[str, Union[Dict[str, int], List[Tuple[str, str]]]]]:
+    def to_dict(self) -> Dict[str, Dict[str, Union[Dict[str, int], List[Tuple[str, str]], float]]]:
         """
         Converts the statistics data to a dictionary format.
 
         Returns:
-            Dict[str, Dict[str, Union[Dict[str, int], List[Tuple[str, str]]]]]: The statistics data as a dictionary.
+            Dict[str, Dict[str, Union[Dict[str, int], List[Tuple[str, str]], float]]]: The statistics data as a dictionary.
         """
         return {
             "counts": {
@@ -23,7 +24,8 @@ class Statistics:
                     "correct": len(self.corrects.get(key, [])),
                     "incorrect": len(self.incorrects.get(key, [])),
                     "error": len(self.errors.get(key, [])),
-                    "total": self.total.get(key, 0)
+                    "total": self.total.get(key, 0),
+                    "recall": self.recall.get(key, 0)
                 }
                 for key in self.total
             },
@@ -82,7 +84,38 @@ class StatisticsManager:
                 if validation_for not in self.statistics.errors:
                     self.statistics.errors[validation_for] = []
                 self.statistics.errors[validation_for].append((db_id, question_id, exec_err))
+                
+    def update_recall(self, db_id: str, question_id: str, validation_for: str, result: Dict[str, Any]):
+        """
+        Updates the recall based on the validation result.
 
+        Args:
+            db_id (str): The database ID.
+            question_id (str): The question ID.
+            validation_for (str): The validation context.
+            result (Dict[str, Any]): The validation result.
+        """
+        ground_truth_sqls = set()
+        for key in result.keys():
+            if key.startswith("revise_") and "GOLD_SQL" in result[key]:
+                ground_truth_sqls.add(result[key]["GOLD_SQL"])
+                
+        correct_predictions = {sql: False for sql in ground_truth_sqls}
+        
+        for key in result.keys():
+            if key.startswith("revise_") and "GOLD_SQL" in result[key] and "exec_res" in result[key]:
+                ground_truth_sql = result[key]["GOLD_SQL"]
+                if result[key]["exec_res"] == 1:
+                    correct_predictions[ground_truth_sql] = True
+        
+        num_ground_truth = len(ground_truth_sqls)
+        num_correct = sum(correct_predictions.values())
+        recall = num_correct / num_ground_truth if num_ground_truth > 0 else 0.0
+        
+        if validation_for not in self.statistics.recall:
+            self.statistics.recall[validation_for] = 0
+        self.statistics.recall[validation_for] = recall
+        
     def dump_statistics_to_file(self):
         """
         Dumps the current statistics to a JSON file.

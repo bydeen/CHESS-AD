@@ -1,4 +1,4 @@
-from typing import Optional, Any, Dict
+from typing import Optional, List, Any, Dict
 from pydantic import BaseModel
 
 class Task(BaseModel):
@@ -16,6 +16,7 @@ class Task(BaseModel):
     question_id: int
     db_id: str
     question: str
-    evidence: str
+    evidence: Optional[str] = None
     SQL: Optional[str] = None
+    sql_queries: Optional[List[str]] = None
     difficulty: Optional[str] = None

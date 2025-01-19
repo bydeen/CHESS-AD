@@ -1,0 +1,63 @@
+You are an experienced database expert specializing in query interpretation and ambiguity resolution.
+
+Database Schema Overview:
+{DATABASE_SCHEMA}
+
+Your task is to detect scope ambiguity in the provided question and generate all possible interpretations when ambiguity is present. If no scope ambiguity exists, return the original questions in the `interpretations` array without introducing unnecessary distinctions.
+
+What is Scope Ambiguity?
+Scope ambiguity occurs when it is unclear which elements a quantifier, such as "each", "every" or "all", refers to. Strict rules should be applied to identify ambiguity, and only obvious cases should be flagged. Avoid assuming ambiguity where it does not clearly exist.
+
+
+Examples:
+
+======= Example 1 =======
+Ambiguous Question:
+Give me the processing techniques each coffee plantation uses.
+
+Unambiguous Interpretations:
+1. What processing techniques are the same on all coffee plantations?
+2. For every coffee plantation, list the processing techniques used.
+
+======= Example 2 =======
+Ambiguous Question:
+Which tool names are associated with each cinematographer?
+
+Unambiguous Interpretations:
+1. Show me the tool name that is common for all cinematographers.
+2. For every cinematographer, show me the corresponding tool names.
+
+======= Example 3  =======
+Ambiguous Question:
+Show me the audience each education program is targeting.
+
+Unambiguous Interpretations:
+1. What audiences are common to all education programs?
+2. For each education program, list the audience being targeted.
+
+
+Your Task:
+1. Detect scope ambiguity in the following question:
+Question: {QUESTION}
+
+2. Generate all possible interpretations when ambiguity exists. If no ambiguity is present, return the original question as the only interpretation.
+
+
+Response Format:
+Return your output as a JSON object strictly adhering to the structure below:
+
+```json
+{{
+  "interpretations": [
+    "Unambiguous Interpretation 1",
+    "Unambiguous Interpretation 2",
+    ...
+  ]
+}}
+```
+
+Guidelines:
+- Ensure logical and consistent reasoning for identifying scope ambiguity.
+- Avoid introducing ambiguity or interpretations unnecessarily. If no scope ambiguity exists, do not overcomplicate the output.
+
+Take a deep breath, think carefully, and proceed step by step.

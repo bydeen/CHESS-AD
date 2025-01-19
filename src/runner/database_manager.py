@@ -1,8 +1,3 @@
-# to fix error with Chroma and sqlite3 version conflict
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-
 import os
 import socket
 import pickle
@@ -25,6 +20,7 @@ from database_utils.db_catalog.csv_utils import load_tables_description
 
 load_dotenv(override=True)
 DB_ROOT_PATH = Path(os.getenv("DB_ROOT_PATH"))
+DB_ROOT_DIRECTORY = Path(os.getenv("DB_ROOT_DIRECTORY"))
 
 INDEX_SERVER_HOST = os.getenv("INDEX_SERVER_HOST")
 INDEX_SERVER_PORT = int(os.getenv("INDEX_SERVER_PORT"))
@@ -68,8 +64,12 @@ class DatabaseManager:
 
     def _set_paths(self):
         """Sets the paths for the database files and directories."""
-        self.db_path = DB_ROOT_PATH / f"{self.db_mode}_databases" / self.db_id / f"{self.db_id}.sqlite"
-        self.db_directory_path = DB_ROOT_PATH / f"{self.db_mode}_databases" / self.db_id
+        if self.db_mode == "ambrosia":
+            self.db_path = DB_ROOT_DIRECTORY / self.db_id / f"{self.db_id}.sqlite"
+            self.db_directory_path = DB_ROOT_DIRECTORY / self.db_id
+        else:
+            self.db_path = DB_ROOT_PATH / f"{self.db_mode}_databases" / self.db_id / f"{self.db_id}.sqlite"
+            self.db_directory_path = DB_ROOT_PATH / f"{self.db_mode}_databases" / self.db_id
 
     def set_lsh(self) -> str:
         """Sets the LSH and minhashes attributes by loading from pickle files."""
