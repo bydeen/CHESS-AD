@@ -3,47 +3,46 @@ You are an experienced database expert specializing in query interpretation and 
 Database Schema Overview:
 {DATABASE_SCHEMA}
 
-Your task is to detect vagueness in the provided question and generate all possible interpretations when ambiguity is present. If no vagueness exists, return the `interpretations` array as empty.
+Your task is to detect vagueness in the provided question and generate all possible interpretations when vagueness is present. If no vagueness exists, return the `Interpretations` array as empty.
 
 What is Vagueness?
-Vagueness occurs when context creates uncertainty about which set of entities is being referred to. Strict rules should be applied to identify ambiguity, and only obvious cases should be flagged. Avoid assuming ambiguity where it does not clearly exist.
+Vagueness occurs when context creates uncertainty about which set of entities is being referred to. Strict rules should be applied to identify vagueness, and only obvious cases should be flagged. Avoid assuming vagueness where it does not clearly exist.
 
 
 Examples:
 
 ======= Example 1 =======
 Ambiguous Question:
-What is the maximum baggage allowance?
+Who did the building design of LAX airport?
 
 Unambiguous Interpretations:
-1. What's the maximum bag weight allowed?
-2. What are the maximum number of bag pieces allowed?
-3. What's the maximum bag weight and maximum number of individual bag pieces allowed?
+1. Which architect designed LAX?
+2. What architecture firm worked on LAX?
+3. Which architect designed LAX and what firm did they work for?
 
 ======= Example 2 =======
 Ambiguous Question:
-Who provided all the materials and when?
+give me a list of resource used in projects containing the word poster
 
 Unambiguous Interpretations:
-1. Show me the resource type and supplier for all expenses by month
-2. Show me the resource type and supplier for all expenses by year
-3. Show me the resource type and supplier for all expenses by month and year
+1. give me a list of textbooks used in projects containing the word poster
+2. give me a list of supply items used in projects containing the word poster
+3. give me a list of textbooks used in projects containing the word poster and the supply items used for that projects.
 
-======= Example 3  =======
+======= Example 3 =======
 Ambiguous Question:
-What are the grades corresponding to each conference and what is it about?
+What is the name and phone number of least experienced applicant.
 
 Unambiguous Interpretations:
-1. List the grades achieved for each project by conference alongside the conference theme track.
-2. Show all the project grades from each conference along with the submission topic.
-3. For every project grade show the associated conference with the relevant theme track and submission topic.
+1. What is the name and phone number of the applicant with the least years of experience?
+2. What is the name and phone number of the applicant with the fewest number of completed projects?
 
 
 Your Task:
-1. Detect vagueness in the following question:
+1. Detect vagueness in the following question using the database schema:
 Question: {QUESTION}
 
-2. Generate all possible interpretations when ambiguity exists. If no ambiguity is present, return the original question as the only interpretation.
+2. Generate all possible interpretations when vagueness exists. If no vagueness is present, return the `Interpretations` array as empty.
 
 
 Response Format:
@@ -61,6 +60,6 @@ Return your output as a JSON object strictly adhering to the structure below:
 
 Guidelines:
 - Ensure logical and consistent reasoning for identifying vagueness.
-- Avoid introducing ambiguity or interpretations unnecessarily. If no vagueness exists, do not overcomplicate the output.
+- Avoid introducing vagueness or interpretations unnecessarily. If no vagueness exists, do not overcomplicate the output.
 
 Take a deep breath, think carefully, and proceed step by step.

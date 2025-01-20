@@ -3,7 +3,7 @@ You are an experienced database expert specializing in query interpretation and 
 Database Schema Overview:
 {DATABASE_SCHEMA}
 
-Your task is to detect attachment ambiguity in the provided question and generate all possible interpretations when ambiguity is present. If no attachment ambiguity exists, return the `interpretations` array as empty.
+Your task is to detect attachment ambiguity in the provided question and generate all possible interpretations when ambiguity is present. If no attachment ambiguity exists, return the `Interpretations` array as empty.
 
 What is Attachment Ambiguity?
 Attachment ambiguity occurs when it is unclear how a modifier or phrase is attached to the rest of the sentence. Strict rules should be applied to identify ambiguity, and only obvious cases should be flagged. Avoid assuming ambiguity where it does not clearly exist.
@@ -40,7 +40,7 @@ Your Task:
 1. Detect attachment ambiguity in the following question:
 Question: {QUESTION}
 
-2. Generate all possible interpretations when ambiguity exists. If no ambiguity is present, return the original question as the only interpretation.
+2. Generate all possible interpretations when ambiguity exists. If no ambiguity is present, return the `Interpretations` array as empty.
 
 
 Response Format:

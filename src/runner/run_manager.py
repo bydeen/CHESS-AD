@@ -83,7 +83,10 @@ class RunManager:
                 data = {"question_id": i, **data}
             if "db_id" not in data:
                 data = {"db_id": self.args.db_id, **data}
-            sql_queries = [value for key, value in data.items() if key.startswith("sql_query") and isinstance(value, str)]
+            sql_queries = [
+                value for key, value in data.items()
+                if key.startswith("sql_query") and not key.startswith("sql_query_general") and isinstance(value, str)
+            ]
             if sql_queries:
                 data["sql_queries"] = sql_queries
             self.update_final_predictions(data["question_id"])

@@ -41,12 +41,12 @@ Unambiguous Interpretations:
 
 #### Vagueness Example
 Ambiguous Question:
-What is the maximum baggage allowance?
+Who did the building design of LAX airport?
 
 Unambiguous Interpretations:
-1. What's the maximum bag weight allowed?
-2. What are the maximum number of bag pieces allowed?
-3. What's the maximum bag weight and maximum number of individual bag pieces allowed?
+1. Which architect designed LAX?
+2. What architecture firm worked on LAX?
+3. Which architect designed LAX and what firm did they work for?
 
 #### Removing Redundancy Across Types
 Unambiguous Interpretations:

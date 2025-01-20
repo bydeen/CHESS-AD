@@ -20,6 +20,9 @@ class RemoveDuplicates(Tool):
         self.parser_name = parser_name
         
     def _run(self, state: SystemState):
+        if not state.unambiguous_questions:
+            state.unambiguous_questions = [state.task.question]
+            
         request_kwargs = {
             "DATABASE_SCHEMA": state.get_schema_string(schema_type="tentative"),
             "INTERPRETATIONS": state.unambiguous_questions,
@@ -36,6 +39,7 @@ class RemoveDuplicates(Tool):
         state.unambiguous_questions = response[0].get("interpretations", [])
         state.example_tables = response[0].get("example_tables", [])
         
+        print(f"\nQuestion: {state.task.question}\n")
         for idx, (interpretation, table) in enumerate(zip(state.unambiguous_questions, state.example_tables), start=1):
             print(f"\nInterpretation {idx}: {interpretation}")
             headers = table.get("headers", [])
