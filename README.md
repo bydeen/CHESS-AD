@@ -12,8 +12,8 @@ The `evaluation` folder contains logs of interpretations and generated tables fo
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/bydeen/CHESS-AD.git
-   cd CHESS-AD
+   git clone https://github.com/bydeen/chess-ad.git
+   cd chess-ad
    ```
 
 2. **Create a `.env` file** in the root directory using `env.example` as a template.
